@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nana Wax — Le Wax à petit prix</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+<!--
+  ============================================================
+   COMMENT ÇA MARCHE (à lire une fois)
+  ============================================================
+  • Pour modifier les PRIX / PROMOS / DISPONIBILITÉ facilement :
+    ouvrez votre boutique en ajoutant  #gestion  à la fin de
+    l'adresse, par exemple :
+        https://votre-nom.github.io/nana-wax/#gestion
+    Un panneau s'ouvre. Vous changez les prix, il génère le code.
+    Vous copiez ce code et le collez dans GitHub (voir le panneau).
+
+  • Pour AJOUTER un nouveau produit : copiez une ligne dans la
+    liste PRODUITS ci-dessous et changez ses valeurs.
+
+  • prixSolde : 0 = prix normal. Un nombre = promo (prix barré + %).
+  • dispo     : "oui" · "bientot" · "non"
+  • image     : nom du fichier photo (ex "eclat.jpg") ou lien .jpg
+  ============================================================
+-->
+<script>
+// ===== DÉBUT DES DONNÉES (c'est CE bloc que le panneau régénère) =====
+const CONFIG = {
+  nomBoutique : "Nana Wax",
+  slogan      : "Le Wax à petit prix, le Wax pour tous.",
+  whatsapp    : "22654595685",
+  devise      : "FCFA",
+  message     : "Commande à la livraison — paiement en espèces ou Mobile Money.",
+  annonce     : "🎉 Soldes du week-end — profitez des prix barrés !"
+};
+const PRODUITS = [
+  { nom:"Pagne fleuri « Éclat »", categorie:"Pagnes Hollantex", prix:6500, prixSolde:5000, dispo:"oui", image:"", note:"Motif floral, coloris rouge et or. Vendu à la pièce (6 yards)." },
+  { nom:"Pagne géométrique « Kôrô »", categorie:"Pagnes Hollantex", prix:7000, prixSolde:0, dispo:"oui", image:"", note:"Motif traditionnel bleu indigo. Idéal tenue de cérémonie." },
+  { nom:"Pagne « Feuilles d'or »", categorie:"Pagnes Hollantex", prix:6000, prixSolde:0, dispo:"bientot", image:"", note:"Réassort en cours. Réservez dès maintenant par message." },
+  { nom:"Pagne « Perles » édition limitée", categorie:"Pagnes Hollantex", prix:8500, prixSolde:0, dispo:"non", image:"", note:"Épuisé pour le moment." }
+];
+// ===== FIN DES DONNÉES =====
+</script>
+
+<style>
+:root{
+  --blanc:#FFFFFF; --fond2:#E9F7F4;
+  --turq:#0FB5A3; --turq-d:#0A8C7E; --or:#E3A13A;
+  --encre:#12403C; --grave:#5E7C79; --ligne:rgba(18,64,60,.13);
+  --promo:#EF6A4D; --ok:#16A34A; --wa:#25D366;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--blanc);color:var(--encre);
+  font-family:"DM Sans",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;}
+@media (prefers-reduced-motion:no-preference){
+  .fx{opacity:0;transform:translateY(14px);animation:rise .6s ease forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+}
+.frise{height:8px;background:repeating-linear-gradient(90deg,
+  var(--turq) 0 14px, var(--promo) 14px 28px,
+  var(--or) 28px 42px, #ffffff 42px 56px);}
+.annonce{background:var(--turq);color:#fff;text-align:center;
+  padding:9px 16px;font-weight:700;font-size:.9rem;}
+header{padding:34px 20px 30px;text-align:center;border-bottom:1px solid var(--ligne);
+  background:radial-gradient(120% 90% at 50% -20%, rgba(15,181,163,.16), transparent 60%),var(--blanc);}
+.marque{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(2rem,7vw,3.2rem);line-height:1.02;letter-spacing:-.02em;}
+.marque span{color:var(--turq)}
+.slogan{color:var(--grave);font-size:clamp(.95rem,3.5vw,1.15rem);margin-top:8px;}
+.piece-badge{display:inline-block;margin-top:16px;padding:7px 16px;border:1px solid var(--turq);
+  border-radius:999px;color:var(--turq-d);font-weight:700;font-size:.82rem;
+  letter-spacing:.04em;text-transform:uppercase;}
+.filtres{position:sticky;top:0;z-index:20;display:flex;gap:8px;overflow-x:auto;padding:14px 16px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--ligne);scrollbar-width:none;}
+.filtres::-webkit-scrollbar{display:none}
+.filtre{flex:0 0 auto;padding:8px 16px;border:1px solid var(--ligne);background:var(--blanc);
+  color:var(--encre);border-radius:999px;font:600 .9rem "DM Sans",sans-serif;cursor:pointer;
+  transition:.2s;white-space:nowrap;}
+.filtre:hover{border-color:var(--turq)}
+.filtre.actif{background:var(--turq);color:#fff;border-color:var(--turq)}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;
+  padding:24px 16px 40px;max-width:1100px;margin:0 auto;}
+.carte{background:var(--blanc);border:1px solid var(--ligne);border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(18,64,60,.06);
+  transition:transform .22s ease, border-color .22s ease, box-shadow .22s ease;}
+.carte:hover{transform:translateY(-4px);border-color:var(--turq);box-shadow:0 10px 26px rgba(15,181,163,.16)}
+.photo{aspect-ratio:4/5;background:linear-gradient(135deg,var(--turq),#6fd8c9 55%,#f0c674);
+  position:relative;display:flex;align-items:center;justify-content:center;}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo .vide{color:rgba(18,64,60,.72);font-weight:700;font-size:.85rem;text-align:center;padding:0 18px;}
+.etat{position:absolute;top:10px;left:10px;padding:5px 11px;border-radius:999px;
+  font-size:.72rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;}
+.etat.oui{background:var(--turq-d);color:#fff}
+.etat.bientot{background:var(--or);color:#3a2600}
+.etat.non{background:#98a8a5;color:#fff}
+.promo-badge{position:absolute;top:10px;right:10px;background:var(--promo);color:#fff;
+  padding:5px 10px;border-radius:999px;font-size:.72rem;font-weight:800;}
+.infos{padding:16px 16px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.titre{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:1.12rem;line-height:1.15;}
+.desc{color:var(--grave);font-size:.88rem;flex:1}
+.prix{font-weight:700;font-size:1.25rem;color:var(--turq-d);display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.prix .barre{color:var(--grave);font-size:.95rem;font-weight:500;text-decoration:line-through;}
+.prix small{font-size:.72rem;color:var(--grave);font-weight:500;flex-basis:100%}
+.ajouter{margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;
+  border:none;border-radius:10px;background:var(--turq);color:#fff;
+  font:700 .95rem "DM Sans",sans-serif;cursor:pointer;transition:.2s;}
+.ajouter:hover{filter:brightness(1.06)}
+.ajouter.ok{background:var(--ok);color:#fff}
+.ajouter.off{background:#dfe7e5;color:var(--grave);cursor:not-allowed}
+.panier-btn{position:fixed;right:16px;bottom:16px;z-index:40;display:flex;align-items:center;gap:8px;
+  padding:14px 18px;border:none;border-radius:999px;background:var(--turq);color:#fff;
+  font:700 .95rem "DM Sans",sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(15,181,163,.32);}
+.panier-btn svg{width:22px;height:22px;fill:#fff}
+.compteur{background:#fff;color:var(--turq-d);min-width:22px;height:22px;padding:0 6px;border-radius:999px;
+  font-size:.8rem;font-weight:800;display:inline-flex;align-items:center;justify-content:center;}
+.voile{position:fixed;inset:0;z-index:45;background:rgba(18,64,60,.35);opacity:0;pointer-events:none;transition:.25s;}
+.voile.ouvert{opacity:1;pointer-events:auto}
+.tiroir{position:fixed;top:0;right:0;bottom:0;z-index:50;width:min(420px,92vw);background:var(--blanc);
+  border-left:1px solid var(--ligne);transform:translateX(100%);transition:transform .28s ease;
+  display:flex;flex-direction:column;box-shadow:-8px 0 28px rgba(18,64,60,.12);}
+.tiroir.ouvert{transform:none}
+.tiroir-tete{display:flex;align-items:center;justify-content:space-between;padding:20px;border-bottom:1px solid var(--ligne);}
+.tiroir-tete h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem}
+.fermer{background:none;border:none;color:var(--encre);font-size:1.6rem;cursor:pointer;line-height:1}
+.tiroir-corps{flex:1;overflow-y:auto;padding:8px 20px}
+.ligne{display:flex;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--ligne);}
+.ligne .l-info{flex:1;min-width:0}
+.ligne .l-nom{font-weight:600;font-size:.95rem}
+.ligne .l-prix{color:var(--turq-d);font-size:.85rem;font-weight:700;margin-top:2px}
+.qte{display:flex;align-items:center;gap:10px}
+.qte button{width:30px;height:30px;border-radius:8px;border:1px solid var(--ligne);
+  background:var(--fond2);color:var(--encre);font-size:1.1rem;cursor:pointer;}
+.qte span{min-width:20px;text-align:center;font-weight:700}
+.retirer{background:none;border:none;color:var(--grave);cursor:pointer;font-size:.8rem;text-decoration:underline}
+.panier-vide{text-align:center;color:var(--grave);padding:50px 20px}
+.tiroir-pied{padding:20px;border-top:1px solid var(--ligne)}
+.total{display:flex;justify-content:space-between;font-size:1.15rem;font-weight:800;margin-bottom:14px}
+.total span:last-child{color:var(--turq-d)}
+.valider{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border:none;
+  border-radius:12px;background:var(--wa);color:#052b12;font:800 1rem "DM Sans",sans-serif;
+  cursor:pointer;text-decoration:none;transition:.2s;}
+.valider:hover{filter:brightness(1.07)}
+.valider.off{background:#dfe7e5;color:var(--grave);pointer-events:none}
+.note-livraison{text-align:center;color:var(--grave);font-size:.8rem;margin-top:10px}
+footer{border-top:1px solid var(--ligne);padding:26px 20px 110px;text-align:center;color:var(--grave);font-size:.85rem;}
+footer b{color:var(--encre)}
+.gestion{position:fixed;inset:0;z-index:100;background:var(--blanc);overflow-y:auto;display:none;}
+.gestion.ouvert{display:block}
+.g-wrap{max-width:640px;margin:0 auto;padding:24px 18px 60px}
+.g-tete{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.g-tete h2{font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem}
+.g-sous{color:var(--grave);font-size:.9rem;margin-bottom:22px}
+.g-champ{margin-bottom:16px}
+.g-champ label{display:block;font-size:.82rem;color:var(--grave);margin-bottom:6px}
+.g-champ input,.g-champ select,.g-code{width:100%;padding:11px 12px;border-radius:10px;
+  border:1px solid var(--ligne);background:var(--blanc);color:var(--encre);
+  font:500 .95rem "DM Sans",sans-serif;}
+.g-prod{background:var(--fond2);border:1px solid var(--ligne);border-radius:14px;padding:16px;margin-bottom:14px}
+.g-prod h3{font-size:1rem;margin-bottom:12px}
+.g-row{display:flex;gap:10px}
+.g-row > div{flex:1}
+.g-row label{font-size:.78rem;color:var(--grave);display:block;margin-bottom:5px}
+.g-row input,.g-row select{width:100%;padding:10px;border-radius:9px;border:1px solid var(--ligne);
+  background:var(--blanc);color:var(--encre);font:600 .95rem "DM Sans",sans-serif;}
+.g-sep{height:1px;background:var(--ligne);margin:26px 0 18px}
+.g-code{height:150px;font-family:ui-monospace,monospace;font-size:.75rem;resize:vertical;white-space:pre;}
+.g-boutons{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.g-btn{flex:1;min-width:140px;padding:14px;border:none;border-radius:11px;font:800 .95rem "DM Sans",sans-serif;cursor:pointer}
+.g-btn.copier{background:var(--turq);color:#fff}
+.g-btn.fermer2{background:var(--blanc);color:var(--encre);border:1px solid var(--ligne)}
+.g-aide{background:rgba(15,181,163,.10);border:1px solid rgba(15,181,163,.4);border-radius:12px;
+  padding:14px 16px;font-size:.86rem;color:var(--encre);margin-top:16px;line-height:1.5}
+.g-aide b{color:var(--turq-d)}
+.g-lien-ouvrir{position:fixed;left:14px;bottom:16px;z-index:40;width:14px;height:14px;
+  border-radius:50%;background:rgba(18,64,60,.10);border:none;cursor:pointer}
+
+</style>
+</head>
+<body>
+
+<div class="frise"></div>
+<div class="annonce" id="annonce"></div>
+
+<header>
+  <h1 class="marque" id="nomBoutique"></h1>
+  <p class="slogan" id="slogan"></p>
+  <span class="piece-badge">Vendu à la pièce</span>
+</header>
+
+<nav class="filtres" id="filtres"></nav>
+<main class="grille" id="grille"></main>
+
+<footer>
+  <p id="pied"></p>
+  <p style="margin-top:8px">Paiement à la livraison · Espèces ou Mobile Money</p>
+</footer>
+
+<button class="panier-btn" id="panierBtn" aria-label="Voir le panier">
+  <svg viewBox="0 0 24 24"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM6.2 6l1.5 7.4c.1.5.5.8 1 .8h8.1c.5 0 .9-.3 1-.8L20 8H7.4l-.3-1.5A1 1 0 0 0 6.1 5H3v2h3.2Z"/></svg>
+  <span>Panier</span><span class="compteur" id="compteur">0</span>
+</button>
+
+<!-- déclencheur discret du panneau de gestion (petit point en bas à gauche) -->
+<button class="g-lien-ouvrir" id="ouvrirGestion" aria-label="Gestion" title="Gestion"></button>
+
+<div class="voile" id="voile"></div>
+<aside class="tiroir" id="tiroir" aria-label="Votre panier">
+  <div class="tiroir-tete"><h2>Votre panier</h2>
+    <button class="fermer" id="fermer" aria-label="Fermer">&times;</button></div>
+  <div class="tiroir-corps" id="tiroirCorps"></div>
+  <div class="tiroir-pied">
+    <div class="total"><span>Total</span><span id="totalTexte">0</span></div>
+    <a class="valider off" id="valider" target="_blank" rel="noopener">Commander sur WhatsApp</a>
+    <p class="note-livraison">Vous confirmez votre commande par message. Paiement à la livraison.</p>
+  </div>
+</aside>
+
+<!-- ================= PANNEAU DE GESTION ================= -->
+<section class="gestion" id="gestion">
+  <div class="g-wrap">
+    <div class="g-tete">
+      <h2>Gestion des prix</h2>
+      <button class="fermer" id="fermerGestion" aria-label="Fermer">&times;</button>
+    </div>
+    <p class="g-sous">Modifiez ci-dessous. L'aperçu de la boutique se met à jour en direct. Copiez ensuite le code pour publier.</p>
+
+    <div class="g-champ">
+      <label>Bandeau d'annonce (laisser vide pour le cacher)</label>
+      <input id="gAnnonce" type="text" placeholder="Ex : Arrivage de nouveaux pagnes !">
+    </div>
+
+    <div id="gProduits"></div>
+
+    <div class="g-sep"></div>
+
+    <label style="font-size:.82rem;color:var(--grave);display:block;margin-bottom:8px">
+      Code à copier (à coller dans GitHub)</label>
+    <textarea class="g-code" id="gCode" readonly></textarea>
+
+    <div class="g-boutons">
+      <button class="g-btn copier" id="gCopier">Copier le code</button>
+      <button class="g-btn fermer2" id="gFermer2">Fermer</button>
+    </div>
+
+    <div class="g-aide">
+      <b>Pour publier vos changements :</b><br>
+      1. Touchez « Copier le code ».<br>
+      2. Sur GitHub, ouvrez le fichier <b>index.html</b> et touchez le crayon ✏️.<br>
+      3. Sélectionnez tout le bloc entre les lignes <b>DÉBUT DES DONNÉES</b> et <b>FIN DES DONNÉES</b> (ces deux lignes comprises) et remplacez-le par ce que vous avez copié.<br>
+      4. Touchez <b>Commit changes</b>. En 1–2 minutes, les nouveaux prix sont en ligne pour vos clientes.
+    </div>
+  </div>
+</section>
+
+<script>
+/* --- Réglages injectés --- */
+function appliquerConfig(){
+  document.getElementById("nomBoutique").innerHTML =
+    CONFIG.nomBoutique.replace(/(\S+)$/, '<span>$1</span>');
+  document.getElementById("slogan").textContent = CONFIG.slogan;
+  document.getElementById("pied").innerHTML = "<b>" + CONFIG.nomBoutique + "</b> — " + CONFIG.message;
+  const b = document.getElementById("annonce");
+  if(CONFIG.annonce){ b.textContent = CONFIG.annonce; b.style.display = "block"; }
+  else { b.style.display = "none"; }
+}
+
+const fmt = n => Number(n).toLocaleString("fr-FR") + " " + CONFIG.devise;
+const LABEL = { oui:"Disponible", bientot:"Bientôt", non:"Épuisé" };
+const lienWA = t => "https://wa.me/" + CONFIG.whatsapp + (t ? "?text=" + encodeURIComponent(t) : "");
+function enPromo(p){ return p.prixSolde && p.prixSolde > 0 && p.prixSolde < p.prix; }
+function prixEffectif(p){ return enPromo(p) ? p.prixSolde : p.prix; }
+function reduction(p){ return Math.round((1 - p.prixSolde / p.prix) * 100); }
+
+const panier = {};
+
+/* --- Filtres --- */
+const filtres = document.getElementById("filtres");
+let filtreActif = "Tout";
+function construireFiltres(){
+  const cats = ["Tout", ...new Set(PRODUITS.map(p => p.categorie))];
+  filtres.innerHTML = "";
+  cats.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "filtre" + (c === filtreActif ? " actif" : "");
+    b.textContent = c;
+    b.onclick = () => { filtreActif = c;
+      [...filtres.children].forEach(x => x.classList.remove("actif"));
+      b.classList.add("actif"); rendreGrille(); };
+    filtres.appendChild(b);
+  });
+}
+
+/* --- Grille --- */
+const grille = document.getElementById("grille");
+function rendreGrille(){
+  grille.innerHTML = "";
+  const liste = PRODUITS.filter(p => filtreActif === "Tout" || p.categorie === filtreActif);
+  if(!liste.length){
+    grille.innerHTML = "<p style='color:var(--grave);grid-column:1/-1;text-align:center;padding:40px'>Aucun article dans cette catégorie.</p>";
+    return;
+  }
+  liste.forEach((p, i) => {
+    const dispo = p.dispo || "oui";
+    const promo = enPromo(p);
+    const blocPrix = promo
+      ? '<p class="prix"><span class="barre">'+fmt(p.prix)+'</span> '+fmt(p.prixSolde)+'<small>/ pièce</small></p>'
+      : '<p class="prix">'+fmt(p.prix)+' <small>/ pièce</small></p>';
+    const c = document.createElement("article");
+    c.className = "carte fx";
+    c.style.animationDelay = (i * 40) + "ms";
+    c.innerHTML =
+      '<div class="photo">' +
+        (p.image ? '<img src="'+p.image+'" alt="'+p.nom+'" loading="lazy">'
+                 : '<span class="vide">Photo à ajouter</span>') +
+        '<span class="etat '+dispo+'">'+LABEL[dispo]+'</span>' +
+        (promo ? '<span class="promo-badge">-'+reduction(p)+'%</span>' : '') +
+      '</div>' +
+      '<div class="infos">' +
+        '<h3 class="titre">'+p.nom+'</h3>' +
+        '<p class="desc">'+(p.note||"")+'</p>' +
+        blocPrix +
+        (dispo === "non"
+          ? '<span class="ajouter off">Épuisé</span>'
+          : '<button class="ajouter" data-nom="'+p.nom+'">Ajouter au panier</button>') +
+      '</div>';
+    grille.appendChild(c);
+  });
+  grille.querySelectorAll(".ajouter:not(.off)").forEach(btn => {
+    btn.onclick = () => {
+      const nom = btn.dataset.nom;
+      panier[nom] = (panier[nom] || 0) + 1;
+      btn.textContent = "Ajouté ✓"; btn.classList.add("ok");
+      setTimeout(() => { btn.textContent = "Ajouter au panier"; btn.classList.remove("ok"); }, 900);
+      majPanier();
+    };
+  });
+}
+
+/* --- Tiroir panier --- */
+const voile = document.getElementById("voile");
+const tiroir = document.getElementById("tiroir");
+document.getElementById("panierBtn").onclick = () => { voile.classList.add("ouvert"); tiroir.classList.add("ouvert"); };
+const fermerPanier = () => { voile.classList.remove("ouvert"); tiroir.classList.remove("ouvert"); };
+document.getElementById("fermer").onclick = fermerPanier;
+voile.onclick = fermerPanier;
+
+const corps = document.getElementById("tiroirCorps");
+const compteur = document.getElementById("compteur");
+const totalTxt = document.getElementById("totalTexte");
+const valider = document.getElementById("valider");
+function produitDe(nom){ return PRODUITS.find(p => p.nom === nom) || {prix:0}; }
+
+function majPanier(){
+  const noms = Object.keys(panier).filter(n => panier[n] > 0);
+  compteur.textContent = noms.reduce((s,n) => s + panier[n], 0);
+  if(!noms.length){
+    corps.innerHTML = '<p class="panier-vide">Votre panier est vide.<br>Ajoutez des pagnes pour commander.</p>';
+    totalTxt.textContent = fmt(0);
+    valider.classList.add("off"); valider.removeAttribute("href");
+    return;
+  }
+  let total = 0; corps.innerHTML = "";
+  noms.forEach(nom => {
+    const p = produitDe(nom), q = panier[nom], pu = prixEffectif(p), sous = q * pu;
+    total += sous;
+    const l = document.createElement("div");
+    l.className = "ligne";
+    l.innerHTML =
+      '<div class="l-info">' +
+        '<div class="l-nom">'+nom+(enPromo(p)?' 🔖':'')+'</div>' +
+        '<div class="l-prix">'+fmt(pu)+' × '+q+' = '+fmt(sous)+'</div>' +
+        '<button class="retirer" data-nom="'+nom+'">Retirer</button>' +
+      '</div>' +
+      '<div class="qte">' +
+        '<button data-moins="'+nom+'">−</button><span>'+q+'</span><button data-plus="'+nom+'">+</button>' +
+      '</div>';
+    corps.appendChild(l);
+  });
+  corps.querySelectorAll("[data-plus]").forEach(b => b.onclick = () => { panier[b.dataset.plus]++; majPanier(); });
+  corps.querySelectorAll("[data-moins]").forEach(b => b.onclick = () => {
+    const n = b.dataset.moins; panier[n]--; if(panier[n] <= 0) delete panier[n]; majPanier(); });
+  corps.querySelectorAll(".retirer").forEach(b => b.onclick = () => { delete panier[b.dataset.nom]; majPanier(); });
+  totalTxt.textContent = fmt(total);
+  let msg = "Bonjour " + CONFIG.nomBoutique + ", je souhaite commander :\n";
+  noms.forEach(nom => {
+    const p = produitDe(nom);
+    msg += "• " + panier[nom] + " × " + nom + " — " + fmt(panier[nom]*prixEffectif(p)) + (enPromo(p)?" (promo)":"") + "\n";
+  });
+  msg += "\nTotal : " + fmt(total) + "\nPaiement à la livraison.";
+  valider.href = lienWA(msg);
+  valider.classList.remove("off");
+}
+
+/* ================= PANNEAU DE GESTION ================= */
+const gestion = document.getElementById("gestion");
+const gProduits = document.getElementById("gProduits");
+const gAnnonce = document.getElementById("gAnnonce");
+const gCode = document.getElementById("gCode");
+
+function construireGestion(){
+  gAnnonce.value = CONFIG.annonce || "";
+  gProduits.innerHTML = "";
+  PRODUITS.forEach((p, idx) => {
+    const bloc = document.createElement("div");
+    bloc.className = "g-prod";
+    bloc.innerHTML =
+      '<div class="g-champ" style="margin-bottom:12px"><label>Nom du produit</label>' +
+        '<input type="text" data-i="'+idx+'" data-k="nom" value="'+String(p.nom).replace(/"/g,"&quot;")+'"></div>' +
+      '<div class="g-row">' +
+        '<div><label>Prix ('+CONFIG.devise+')</label>' +
+          '<input type="number" inputmode="numeric" data-i="'+idx+'" data-k="prix" value="'+(p.prix||0)+'"></div>' +
+        '<div><label>Prix promo (0 = aucun)</label>' +
+          '<input type="number" inputmode="numeric" data-i="'+idx+'" data-k="prixSolde" value="'+(p.prixSolde||0)+'"></div>' +
+      '</div>' +
+      '<div class="g-row" style="margin-top:10px">' +
+        '<div><label>Disponibilité</label>' +
+          '<select data-i="'+idx+'" data-k="dispo">' +
+            '<option value="oui"'+(p.dispo==="oui"?" selected":"")+'>Disponible</option>' +
+            '<option value="bientot"'+(p.dispo==="bientot"?" selected":"")+'>Bientôt</option>' +
+            '<option value="non"'+(p.dispo==="non"?" selected":"")+'>Épuisé</option>' +
+          '</select></div>' +
+      '</div>' +
+      '<div class="g-champ" style="margin-top:10px;margin-bottom:0"><label>Description</label>' +
+        '<input type="text" data-i="'+idx+'" data-k="note" value="'+String(p.note||"").replace(/"/g,"&quot;")+'"></div>';
+    gProduits.appendChild(bloc);
+  });
+  gProduits.querySelectorAll("input,select").forEach(el => {
+    el.oninput = () => {
+      const i = +el.dataset.i, k = el.dataset.k;
+      PRODUITS[i][k] = (k === "prix" || k === "prixSolde") ? (parseInt(el.value,10) || 0) : el.value;
+      appliquerConfig(); construireFiltres(); rendreGrille(); majPanier(); genererCode();
+    };
+  });
+  gAnnonce.oninput = () => { CONFIG.annonce = gAnnonce.value; appliquerConfig(); genererCode(); };
+  genererCode();
+}
+
+function genererCode(){
+  let s = "// ===== DÉBUT DES DONNÉES (c'est CE bloc que le panneau régénère) =====\n";
+  s += "const CONFIG = {\n";
+  s += "  nomBoutique : " + JSON.stringify(CONFIG.nomBoutique) + ",\n";
+  s += "  slogan      : " + JSON.stringify(CONFIG.slogan) + ",\n";
+  s += "  whatsapp    : " + JSON.stringify(CONFIG.whatsapp) + ",\n";
+  s += "  devise      : " + JSON.stringify(CONFIG.devise) + ",\n";
+  s += "  message     : " + JSON.stringify(CONFIG.message) + ",\n";
+  s += "  annonce     : " + JSON.stringify(CONFIG.annonce || "") + "\n";
+  s += "};\n";
+  s += "const PRODUITS = [\n";
+  s += PRODUITS.map(p =>
+        "  { nom:" + JSON.stringify(p.nom) +
+        ", categorie:" + JSON.stringify(p.categorie) +
+        ", prix:" + (p.prix||0) +
+        ", prixSolde:" + (p.prixSolde||0) +
+        ", dispo:" + JSON.stringify(p.dispo||"oui") +
+        ", image:" + JSON.stringify(p.image||"") +
+        ", note:" + JSON.stringify(p.note||"") + " }"
+      ).join(",\n") + "\n";
+  s += "];\n";
+  s += "// ===== FIN DES DONNÉES =====";
+  gCode.value = s;
+}
+
+document.getElementById("gCopier").onclick = () => {
+  gCode.select();
+  gCode.setSelectionRange(0, 99999);
+  const fini = ok => {
+    const b = document.getElementById("gCopier");
+    b.textContent = ok ? "Copié ✓" : "Sélectionné — copiez";
+    setTimeout(() => b.textContent = "Copier le code", 1600);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(gCode.value).then(() => fini(true)).catch(() => fini(false));
+  } else { try{ document.execCommand("copy"); fini(true); }catch(e){ fini(false); } }
+};
+
+function ouvrirGestion(){ construireGestion(); gestion.classList.add("ouvert"); }
+function fermerGestion(){ gestion.classList.remove("ouvert");
+  if(location.hash === "#gestion"){ history.replaceState(null,"",location.pathname); } }
+document.getElementById("ouvrirGestion").onclick = ouvrirGestion;
+document.getElementById("fermerGestion").onclick = fermerGestion;
+document.getElementById("gFermer2").onclick = fermerGestion;
+if(location.hash === "#gestion"){ ouvrirGestion(); }
+
+/* --- Démarrage --- */
+appliquerConfig();
+construireFiltres();
+rendreGrille();
+majPanier();
+</script>
+
+<!-- =================================================================
+  PHOTOS : mettez le fichier dans le même dossier → image:"eclat.jpg"
+  GESTION DES PRIX : ouvrez l'adresse + #gestion
+  EN LIGNE GRATUIT (téléphone) : github.com → dépôt public → Upload
+  files (index.html + photos) → Settings → Pages → Save.
+================================================================= -->
+</body>
+</html>
